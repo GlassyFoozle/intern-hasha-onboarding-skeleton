@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from 'react-router';
 
 import { PATH } from '@/entities/route';
 
@@ -14,7 +14,7 @@ type PreviousForm = {
   localId: string;
   password: string;
   username: string;
-}
+};
 
 export const useRouteNavigation = () => {
   const navigate = useNavigate();
@@ -34,13 +34,13 @@ export const useRouteNavigation = () => {
       void navigate(SIGN_UP_SELECT);
     },
     toVerifyEmail: ({ body }: { body: VerifyMailBody }) => {
-      void navigate(VERIFY_EMAIL, { state: { body }});
+      void navigate(VERIFY_EMAIL, { state: { body } });
     },
     toSignUpLocal: ({ body }: { body?: PreviousForm }) => {
-      void navigate(SIGN_UP_LOCAL, { state: { body }});
+      void navigate(SIGN_UP_LOCAL, { state: { body } });
     },
     toSignUpComplete: () => {
       void navigate(SIGN_UP_COMPLETE);
-    }
-  }
-}
+    },
+  };
+};
