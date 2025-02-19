@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router';
 import { PATH } from '@/entities/route';
 
 type VerifyMailBody = {
-  authProvider: 'LOCAL';
   localId: string;
   password: string;
   username: string;
 };
 
 type PreviousForm = {
-  authProvider: 'LOCAL';
   localId: string;
   password: string;
   username: string;

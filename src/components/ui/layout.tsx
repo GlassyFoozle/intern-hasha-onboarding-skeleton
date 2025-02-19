@@ -19,7 +19,7 @@ export const ModalBackgroundWithHeader = ({
           className,
         )}
       >
-        <div className="flex flex-col w-full max-w-md pt-10 pb-[30px] px-[34px] gap-5 bg-white rounded-2xl shadow-md">
+        <div className="flex flex-col w-full max-w-[428px] pt-10 pb-[30px] px-[34px] gap-5 bg-white rounded-2xl shadow-md">
           {children}
         </div>
       </div>
