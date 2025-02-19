@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useLocation } from 'react-router';
 
@@ -11,7 +12,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ICON_SRC } from '@/entities/asset';
+import { createErrorMessage } from '@/entities/errors';
 import { authPresentation } from '@/feature/auth/presentation/authPresentation';
+import { useGuardContext } from '@/shared/context/hooks';
+import { ServiceContext } from '@/shared/context/ServiceContext';
 import { useRouteNavigation } from '@/shared/route/useRouteNavigation';
 
 type LocalSignUpInitialBody = {
@@ -37,6 +41,11 @@ export const LocalSignUpForm = () => {
     useState(false);
   const [responseMessage, setResponseMessage] = useState('');
 
+  const { checkLocalId, isPending } = useCheckLocalId({
+    setLocalIdCheckSuccess,
+    setResponseMessage,
+  });
+
   const checkLocalIdDisable = localId.isError || localIdCheckSuccess;
   const signUpDisable =
     username.isError ||
@@ -46,6 +55,7 @@ export const LocalSignUpForm = () => {
 
   const handleClickUsernameDuplicateCheck = () => {
     if (checkLocalIdDisable) return;
+    checkLocalId({ localId: localId.value });
     setResponseMessage('');
   };
 
@@ -78,6 +88,7 @@ export const LocalSignUpForm = () => {
                 setIsUsernameFocused(false);
               }}
               placeholder="이름을 입력해주세요."
+              disabled={isPending}
             />
             {isUsernameFocused && username.isError && (
               <FormErrorResponse>
@@ -95,6 +106,7 @@ export const LocalSignUpForm = () => {
                   localId.onChange(e.target.value);
                 }}
                 placeholder="아이디를 입력해주세요."
+                disabled={isPending}
               />
               <Button
                 variant="outline"
@@ -102,7 +114,7 @@ export const LocalSignUpForm = () => {
                   event.preventDefault();
                   handleClickUsernameDuplicateCheck();
                 }}
-                disabled={checkLocalIdDisable}
+                disabled={isPending || checkLocalIdDisable}
               >
                 중복확인
               </Button>
@@ -126,6 +138,7 @@ export const LocalSignUpForm = () => {
                 setIsPasswordFocused(false);
               }}
               placeholder="비밀번호를 입력해주세요."
+              disabled={isPending}
             />
             {isPasswordFocused && password.isError && (
               <div className="flex flex-col gap-1">
@@ -174,6 +187,7 @@ export const LocalSignUpForm = () => {
                 passwordConfirm.onChange(e.target.value);
               }}
               placeholder="비밀번호를 한 번 더 입력해주세요."
+              disabled={isPending}
             />
             {isPasswordConfirmFocused &&
               (passwordConfirm.isError ? (
@@ -188,10 +202,45 @@ export const LocalSignUpForm = () => {
         {responseMessage !== '' && (
           <FormErrorResponse>{responseMessage}</FormErrorResponse>
         )}
-        <Button form="SignUpForm" disabled={signUpDisable}>
+        <Button form="SignUpForm" disabled={isPending || signUpDisable}>
           다음
         </Button>
       </FormContainer>
     </>
   );
+};
+
+const useCheckLocalId = ({
+  setLocalIdCheckSuccess,
+  setResponseMessage,
+}: {
+  setLocalIdCheckSuccess(input: boolean): void;
+  setResponseMessage(input: string): void;
+}) => {
+  const { authService } = useGuardContext(ServiceContext);
+
+  const { mutate: checkLocalId, isPending } = useMutation({
+    mutationFn: ({ localId }: { localId: string }) => {
+      return authService.checkLocalIdDuplicate({ localId });
+    },
+    onSuccess: (response) => {
+      if (response.type === 'success') {
+        setLocalIdCheckSuccess(true);
+      } else {
+        setLocalIdCheckSuccess(false);
+        setResponseMessage(createErrorMessage(response.code));
+      }
+    },
+    onError: () => {
+      setLocalIdCheckSuccess(false);
+      setResponseMessage(
+        '회원가입에 실패했습니다. 잠시 후에 다시 실행해주세요.',
+      );
+    },
+  });
+
+  return {
+    checkLocalId,
+    isPending,
+  };
 };
