@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 type StringInput = {
   isError: boolean;
@@ -12,7 +12,7 @@ type StringInputWithDetailedError = StringInput & {
 
 type StringInputWithPostfix = StringInput & {
   postfix: string;
-}
+};
 
 type InitialState = {
   snuMail?: string;
@@ -24,7 +24,7 @@ type InitialState = {
 };
 
 type AuthPresentation = {
-  useValidator({ initialState }: { initialState?: InitialState}): {
+  useValidator({ initialState }: { initialState?: InitialState }): {
     snuMail: StringInputWithPostfix;
     password: StringInputWithDetailedError;
     passwordConfirm: StringInput;
@@ -49,7 +49,9 @@ const USERNAME_REGEX = /^([가-힣]{2,6}|[A-Za-z]{2,20})$/;
 
 export const authPresentation: AuthPresentation = {
   useValidator: ({ initialState = {} }) => {
-    const [email, setEmail] = useState(initialState.snuMail !== undefined ? initialState.snuMail : '');
+    const [email, setEmail] = useState(
+      initialState.snuMail !== undefined ? initialState.snuMail : '',
+    );
     const [password, setPassword] = useState(
       initialState.password !== undefined ? initialState.password : '',
     );
@@ -128,5 +130,5 @@ export const authPresentation: AuthPresentation = {
         onChange: handleUsernameChange,
       },
     };
-  }
+  },
 };
