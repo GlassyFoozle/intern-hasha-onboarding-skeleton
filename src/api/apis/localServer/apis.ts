@@ -4,9 +4,7 @@ import type {
   ResponseNecessary,
   SuccessResponse,
 } from '../../entities';
-import type {
-  IdRequest
-} from './schemas';
+import type { IdRequest } from './schemas';
 
 type GetApisProps = {
   callWithToken: <R extends ResponseNecessary>(
@@ -50,10 +48,10 @@ export const getLocalServerApis = ({
         path: `echo`,
         token: '',
       }),
-    'POST /user/signup/check-id': ({ body }: { body: IdRequest}) =>
+    'POST /user/signup/check-id': ({ body }: { body: IdRequest }) =>
       callWithoutToken<SuccessResponse<void>>({
         method: 'POST',
         path: 'user/signup/check-id',
         body,
-      })
+      }),
   }) satisfies Record<string, Api>;

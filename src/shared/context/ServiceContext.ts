@@ -1,6 +1,6 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-import type { AuthService } from "@/feature/auth";
+import type { AuthService } from '@/feature/auth';
 
 export type ServiceContext = {
   authService: AuthService;
