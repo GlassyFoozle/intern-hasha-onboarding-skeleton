@@ -1,12 +1,10 @@
-// GUIDE: 작업하실 때는 주석을 푸시면 됩니다.
-
 import type {
   ErrorResponse,
   InternalCallParams,
   ResponseNecessary,
   SuccessResponse,
 } from '../../entities';
-import type {} from './schemas';
+import type { IdRequest } from './schemas';
 
 type GetApisProps = {
   callWithToken: <R extends ResponseNecessary>(
@@ -32,7 +30,6 @@ export const getLocalServerApis = ({
   callWithoutToken,
   callWithOptionalToken,
 }: GetApisProps) =>
-  // GUIDE: 예시 api들입니다.
   ({
     'GET /echo/:message': () =>
       callWithoutToken<SuccessResponse<never>>({
@@ -50,5 +47,11 @@ export const getLocalServerApis = ({
         method: 'GET',
         path: `echo`,
         token: '',
+      }),
+    'POST /user/signup/check-id': ({ body }: { body: IdRequest }) =>
+      callWithoutToken<SuccessResponse<void>>({
+        method: 'POST',
+        path: 'user/signup/check-id',
+        body,
       }),
   }) satisfies Record<string, Api>;
