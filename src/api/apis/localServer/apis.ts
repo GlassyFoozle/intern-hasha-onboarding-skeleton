@@ -4,7 +4,13 @@ import type {
   ResponseNecessary,
   SuccessResponse,
 } from '../../entities';
-import type { IdRequest } from './schemas';
+import type {
+  EmailVerifyRequest,
+  IdRequest,
+  SignUpRequest,
+  SnuMailRequest,
+  UserWithTokenResponse,
+} from './schemas';
 
 type GetApisProps = {
   callWithToken: <R extends ResponseNecessary>(
@@ -52,6 +58,32 @@ export const getLocalServerApis = ({
       callWithoutToken<SuccessResponse<void>>({
         method: 'POST',
         path: 'user/signup/check-id',
+        body,
+      }),
+    'POST /user/snu-mail-verification/request': ({
+      body,
+    }: {
+      body: SnuMailRequest;
+    }) =>
+      callWithoutToken<SuccessResponse<void>>({
+        method: 'POST',
+        path: 'user/snu-mail-verification/request',
+        body,
+      }),
+    'POST /user/snu-mail-verification/verify': ({
+      body,
+    }: {
+      body: EmailVerifyRequest;
+    }) =>
+      callWithoutToken<SuccessResponse<void>>({
+        method: 'POST',
+        path: 'user/snu-mail-verification/verify',
+        body,
+      }),
+    'POST /user/signup': ({ body }: { body: SignUpRequest }) =>
+      callWithoutToken<SuccessResponse<UserWithTokenResponse>>({
+        method: 'POST',
+        path: 'user/signup',
         body,
       }),
   }) satisfies Record<string, Api>;

@@ -1,6 +1,7 @@
 import './index.css';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Route, Routes } from 'react-router';
 
 import { type ExternalCallParams, implApi } from '@/api';
@@ -14,6 +15,10 @@ import { EnvContext } from '@/shared/context/EnvContext';
 import { useGuardContext } from '@/shared/context/hooks';
 import { ServiceContext } from '@/shared/context/ServiceContext';
 
+import { SignUpCompletePage } from './pages/SignUpCompletePage';
+import { TokenContext } from './shared/context/TokenContext';
+import { implTokenStateRepository } from './shared/token/state';
+
 const RouterProvider = () => {
   return (
     <Routes>
@@ -21,6 +26,7 @@ const RouterProvider = () => {
       <Route path={PATH.SIGN_UP_SELECT} element={<SignUpSelectPage />} />
       <Route path={PATH.SIGN_UP_LOCAL} element={<LocalSignUpPage />} />
       <Route path={PATH.VERIFY_EMAIL} element={<EmailVerifyPage />} />
+      <Route path={PATH.SIGN_UP_COMPLETE} element={<SignUpCompletePage />} />
     </Routes>
   );
 };
@@ -35,7 +41,10 @@ const queryClient = new QueryClient({
 });
 
 export const App = () => {
+  const [token, setToken] = useState<string | null>(null);
+
   const ENV = useGuardContext(EnvContext);
+  const tokenStateRepository = implTokenStateRepository({ setToken });
 
   const localServerCall = async (content: ExternalCallParams) => {
     const response = await fetch(
@@ -51,6 +60,12 @@ export const App = () => {
 
     const responseBody = (await response.json().catch(() => null)) as unknown;
 
+    if (!response.ok) {
+      if (response.status === 401) {
+        tokenStateRepository.removeToken();
+      }
+    }
+
     return {
       status: response.status,
       data: responseBody,
@@ -61,13 +76,16 @@ export const App = () => {
   const services = {
     authService: implAuthService({
       apis,
+      tokenStateRepository,
     }),
   };
 
   return (
     <QueryClientProvider client={queryClient}>
       <ServiceContext.Provider value={services}>
-        <RouterProvider />
+        <TokenContext.Provider value={{ token }}>
+          <RouterProvider />
+        </TokenContext.Provider>
       </ServiceContext.Provider>
     </QueryClientProvider>
   );
