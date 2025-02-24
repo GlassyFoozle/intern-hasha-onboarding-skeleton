@@ -26,3 +26,30 @@ export const ModalBackgroundWithHeader = ({
     </div>
   );
 };
+
+export interface ModalProps extends React.ButtonHTMLAttributes<HTMLDivElement> {
+  isVisible?: boolean;
+  onOutsideClick?: () => void;
+}
+
+export const ModalFloatBackground = ({
+  children,
+  isVisible,
+  onOutsideClick,
+}: ModalProps) => {
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-grey-light-active"
+      onClick={onOutsideClick}
+    >
+      <div
+        className={`flex flex-col gap-[50px] bg-white rounded-2xl shadow-lg max-w-sm w-full px-[34px] pt-[40px] pb-[30px] text-center ${isVisible === undefined || isVisible ? 'animate-popup' : 'animate-popout'}`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};

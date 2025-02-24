@@ -51,7 +51,8 @@ export const LocalSignUpForm = () => {
     username.isError ||
     localId.isError ||
     password.isError ||
-    passwordConfirm.isError;
+    passwordConfirm.isError ||
+    !localIdCheckSuccess;
 
   const handleClickUsernameDuplicateCheck = () => {
     if (checkLocalIdDisable) return;
