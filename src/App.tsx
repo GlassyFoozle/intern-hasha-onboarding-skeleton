@@ -15,8 +15,13 @@ import { EnvContext } from '@/shared/context/EnvContext';
 import { useGuardContext } from '@/shared/context/hooks';
 import { ServiceContext } from '@/shared/context/ServiceContext';
 
+import type { RolesFilterCategory } from './entities/filter';
+import { implLandingService } from './feature/landing/service/landingService';
 import { SignUpCompletePage } from './pages/SignUpCompletePage';
+import { RolesFilterContext } from './shared/context/RolesFilterContext';
 import { TokenContext } from './shared/context/TokenContext';
+import { implRolesFilterLocalStorageRepository } from './shared/rolesFilter/localstorage';
+import { implRolesFilterStateRepository } from './shared/rolesFilter/state';
 import { implTokenStateRepository } from './shared/token/state';
 
 const RouterProvider = () => {
@@ -41,10 +46,23 @@ const queryClient = new QueryClient({
 });
 
 export const App = () => {
+  const rolesFilterLocalStorageRepository =
+    implRolesFilterLocalStorageRepository();
+
   const [token, setToken] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<RolesFilterCategory>(
+    rolesFilterLocalStorageRepository.getActiveJobCategory,
+  );
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(
+    rolesFilterLocalStorageRepository.getIsFilterDropdownOpen,
+  );
 
   const ENV = useGuardContext(EnvContext);
   const tokenStateRepository = implTokenStateRepository({ setToken });
+  const rolesFilterStateRepository = implRolesFilterStateRepository({
+    setActiveCategory,
+    setIsFilterDropdownOpen,
+  });
 
   const localServerCall = async (content: ExternalCallParams) => {
     const response = await fetch(
@@ -78,13 +96,21 @@ export const App = () => {
       apis,
       tokenStateRepository,
     }),
+    landingService: implLandingService({
+      rolesFilterStateRepository,
+      rolesFilterLocalStorageRepository,
+    }),
   };
 
   return (
     <QueryClientProvider client={queryClient}>
       <ServiceContext.Provider value={services}>
         <TokenContext.Provider value={{ token }}>
-          <RouterProvider />
+          <RolesFilterContext.Provider
+            value={{ activeCategory, isFilterDropdownOpen }}
+          >
+            <RouterProvider />
+          </RolesFilterContext.Provider>
         </TokenContext.Provider>
       </ServiceContext.Provider>
     </QueryClientProvider>
