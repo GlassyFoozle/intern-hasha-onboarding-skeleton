@@ -2,7 +2,12 @@ import { useState } from 'react';
 
 import { GlobalNavigationBar } from '@/components/nav/GlobalNavigationBar';
 import type { FilterElements, JobMinorCategory } from '@/entities/post';
-import { RolesFilter } from '@/feature/landing/ui/RolesFilter';
+import { FilterSection } from '@/feature/landing/ui/FilterSection';
+import { LandingPostView } from '@/feature/landing/ui/LandingPostView';
+import {
+  NarrowRolesFilter,
+  RolesFilter,
+} from '@/feature/landing/ui/RolesFilter';
 
 export const LandingPage = () => {
   const [filterElements, setFilterElements] = useState<FilterElements>({
@@ -26,9 +31,19 @@ export const LandingPage = () => {
             />
           </div>
 
+          <div className="block w-full md:hidden">
+            <NarrowRolesFilter
+              roles={filterElements.roles}
+              onChangeRoles={handleRolesChange}
+            />
+          </div>
+
           <div className="flex-1">
-            <h2 className="text-3xl font-bold">인턴 공고</h2>
-            LandingPage
+            <h2 className="text-3xl font-bold leading-[45px]">인턴 공고</h2>
+            <div className="flex py-[24px]">
+              <FilterSection />
+            </div>
+            <LandingPostView />
           </div>
         </div>
       </div>
